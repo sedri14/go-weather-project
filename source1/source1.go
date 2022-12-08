@@ -180,8 +180,22 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 	}
 }
 
-func WillItRain(doc *goquery.Document) {
-	
+//Will it rain? - a function that gets a city and a number and returns the chance of rain in this city in the next x days
+func WillItRain(days int, doc *goquery.Document) []int{
+	r := regexp.MustCompile(`[0-9]+`)
+	var chances []int
+
+	doc.Find("#wt-ext>tbody>tr>td:nth-child(9)").EachWithBreak(func(index int, item *goquery.Selection) bool {
+		chanceStr := item.Text()
+		c := r.FindString(chanceStr)
+		intChance, err := strconv.Atoi(c)
+		check(err)
+		chances = append(chances, intChance)
+
+		return index != days - 1
+	})
+
+	return chances
 }
 
 func HelloFromSource1()  {	
@@ -192,7 +206,9 @@ func HelloFromSource1()  {
 	// fmt.Println(t)
 	// a := AverageTemp(3,doc)
 	// fmt.Println(a)
-	r,ok := NextDayRain(doc)
-	fmt.Println(r, ok)
+	// r,ok := NextDayRain(doc)
+	// fmt.Println(r, ok)
+	chanceArr := WillItRain(7, doc)
+	fmt.Println(chanceArr)
 }
 
