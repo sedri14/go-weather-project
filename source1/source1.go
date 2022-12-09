@@ -57,13 +57,9 @@ func check(error error) {
 
 func getWeatherSummary(doc *goquery.Document) WeatherSummary {
 	humidity := getHumidity(doc)
-	//fmt.Println(humidity)
 	min, max := getMinMaxTemp(doc)
-	//fmt.Println(min, max)
 	chance := getChance(doc)
-	//fmt.Println(chance)
 	wind := getWind(doc)
-	//fmt.Println(wind)
 
 	return WeatherSummary {min, max, humidity, wind, chance}
 }
