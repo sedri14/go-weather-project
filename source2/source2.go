@@ -168,7 +168,7 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 		rainChanceStr := item.Find("div>div:nth-child(2)>div.row>div:nth-child(2)>ul>li:first-child").Text()
 		intChance, err := strconv.Atoi(r.FindString(rainChanceStr))
 		check(err)
-		fmt.Println(intChance)
+		//fmt.Println(intChance)
 
 		if intChance > 50 {
 			dateStr = item.Find(`div:first-child>div:first-child>div:first-child`).Text()
@@ -198,7 +198,7 @@ func WillItRain(days int, doc *goquery.Document) []int{
 		fmt.Println(intChance)
 		check(err)
 		chances = append(chances, intChance)
-		
+
 		return index != days - 1
 	})
 
@@ -210,7 +210,7 @@ func HelloFromSource2() {
 	//fmt.Println(getWeatherSummary(doc))
 	//fmt.Println(TempArray(4,doc))
 	//fmt.Println(AverageTemp(4,doc))
-	//NextDayRain(doc)
-	WillItRain(5,doc)
+	fmt.Println(NextDayRain(doc))
+	//WillItRain(5,doc)
 
 }

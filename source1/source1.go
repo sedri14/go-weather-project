@@ -8,23 +8,33 @@ import (
 	"regexp"
 	"strconv"
 
+	"example.com/common"
+
 	"github.com/PuerkitoBio/goquery"
 )
 
 const URL = "https://www.timeanddate.com/weather/israel/tel-aviv/ext"
 
-type WeatherSummary struct {
-	minTemp int
-	maxTemp int
-	humidity int
-	wind int
-	chanceOfRain int
-}
+// type Forecast struct {
+// 	Summary WeatherSummary
+// 	TempArray []MinMaxPair
+// 	AvgTemp float64
+// 	NextRainDay string
+// 	WillItRain []int
+// }
 
-type MinMaxPair struct {
-	min int
-	max int
-}
+// type WeatherSummary struct {
+// 	minTemp int
+// 	maxTemp int
+// 	humidity int
+// 	wind int
+// 	chanceOfRain int
+// }
+
+// type MinMaxPair struct {
+// 	min int
+// 	max int
+// }
 
 func getHtml(url string) *http.Response {
 	response, error := http.Get(url)
@@ -55,13 +65,13 @@ func check(error error) {
 	}
 }
 
-func getWeatherSummary(doc *goquery.Document) WeatherSummary {
+func getWeatherSummary(doc *goquery.Document) common.WeatherSummary {
 	humidity := getHumidity(doc)
 	min, max := getMinMaxTemp(doc)
 	chance := getChance(doc)
 	wind := getWind(doc)
 
-	return WeatherSummary {min, max, humidity, wind, chance}
+	return common.WeatherSummary {min, max, humidity, wind, chance}
 }
 
 func getHumidity(doc *goquery.Document) int {
@@ -107,9 +117,9 @@ func getWind(doc *goquery.Document) int {
 	return wind
 }
 
-func TempArray(days int, doc *goquery.Document) []MinMaxPair {
+func TempArray(days int, doc *goquery.Document) []common.MinMaxPair {
 	r := regexp.MustCompile(`[0-9]+`)
-	var minMaxPairs []MinMaxPair
+	var minMaxPairs []common.MinMaxPair
 
 	doc.Find("#wt-ext>tbody>tr>td:nth-child(3)").EachWithBreak(func(index int, item *goquery.Selection) bool {
 		pair := item.Text()
@@ -120,7 +130,7 @@ func TempArray(days int, doc *goquery.Document) []MinMaxPair {
 		check(errMax)
 		min, errMin := strconv.Atoi(split[1])
 		check(errMin)
-		minMaxPairs = append(minMaxPairs, MinMaxPair{min, max})
+		minMaxPairs = append(minMaxPairs, common.MinMaxPair{min, max})
 
 		return index != days - 1
 	})
@@ -134,8 +144,8 @@ func AverageTemp(days int, doc *goquery.Document) float64 {
 	var maxSum int
 	var minSum int
 	for _,pair := range tempArr {
-		maxSum = maxSum + pair.max
-		minSum = minSum + pair.min 
+		maxSum = maxSum + pair.Max
+		minSum = minSum + pair.Min 
 	}
 
 	maxAvg := float64(maxSum) / float64(len(tempArr))
@@ -150,7 +160,6 @@ func AverageTemp(days int, doc *goquery.Document) float64 {
 //if no rainy day is found in near future, bool result is false
 func NextDayRain(doc *goquery.Document) (string, bool) {
 	r := regexp.MustCompile(`[0-9]+`)
-	//rMonth := regexp.MustCompile(`([a-zA-Z]+)`)
 
 	var dateStr string
 
@@ -158,7 +167,6 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 		rainChanceStr := item.Find("td:nth-child(9)").Text()
 		intChance, err := strconv.Atoi(r.FindString(rainChanceStr))
 		check(err)
-		fmt.Println(intChance)
 
 		if intChance > 50 {
 			dateStr = item.Find("th").Text()
@@ -194,17 +202,10 @@ func WillItRain(days int, doc *goquery.Document) []int{
 	return chances
 }
 
-func HelloFromSource1()  {	
+func GetForecast(days int) common.Forecast {	
 	doc := getPageContent()
-    // w := getWeatherSummary(doc)
-	// fmt.Println(w)
-	// t := TempArray(3, doc)
-	// fmt.Println(t)
-	// a := AverageTemp(3,doc)
-	// fmt.Println(a)
-	// r,ok := NextDayRain(doc)
-	// fmt.Println(r, ok)
-	chanceArr := WillItRain(7, doc)
-	fmt.Println(chanceArr)
+	date, _ := NextDayRain(doc)
+	forecast := common.Forecast{getWeatherSummary(doc), TempArray(days, doc), AverageTemp(days,doc), date , WillItRain(days, doc)}
+	return forecast
 }
 
