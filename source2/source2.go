@@ -9,23 +9,11 @@ import (
 	"regexp"
 	"strconv"
 
+	"example.com/common"
 	"github.com/PuerkitoBio/goquery"
 )
 
 const URL = "https://www.weather-atlas.com/en/israel/tel-aviv-yafo-long-term-weather-forecast"
-
-type WeatherSummary struct {
-	minTemp int
-	maxTemp int
-	humidity int
-	wind int
-	chanceOfRain int
-}
-
-type MinMaxPair struct {
-	min int
-	max int
-}
 
 func getHtml(url string) *http.Response {
 	response, error := http.Get(url)
@@ -56,14 +44,14 @@ func check(error error) {
 	}
 }
 
-func getWeatherSummary(doc *goquery.Document) WeatherSummary {
+func getWeatherSummary(doc *goquery.Document) common.WeatherSummary {
 	humidity := getHumidity(doc)
 	min := getMinTemp(doc)
 	//max := getMaxTemp(doc) //TODO: check if works at morning hours
 	chance := getChance(doc)
 	wind := getWind(doc)
 
-	return WeatherSummary {min, 0, humidity, wind, chance}
+	return common.WeatherSummary {min, 0, humidity, wind, chance}
 }
 
 func getHumidity(doc *goquery.Document) int {
@@ -118,9 +106,9 @@ func getChance(doc *goquery.Document) int{
 	return intChance
 }
 
-func TempArray(days int, doc *goquery.Document) []MinMaxPair {
+func TempArray(days int, doc *goquery.Document) []common.MinMaxPair {
 	r := regexp.MustCompile(`[0-9]+`)
-	var minMaxPairs []MinMaxPair
+	var minMaxPairs []common.MinMaxPair
 
 	doc.Find(`div[itemtype="https://schema.org/Table"]>div>div:first-child>div:nth-child(2)>ul`).EachWithBreak(func(index int, item *goquery.Selection) bool {
 		maxStr := item.Find(`li:first-child`).First().Text()
@@ -133,7 +121,7 @@ func TempArray(days int, doc *goquery.Document) []MinMaxPair {
 		check(errMax)
 		intMin, errMin := strconv.Atoi(min)
 		check(errMin)
-		minMaxPairs = append(minMaxPairs, MinMaxPair{intMin, intMax})
+		minMaxPairs = append(minMaxPairs, common.MinMaxPair{intMin, intMax})
 
 		return index != days - 1
 	})
@@ -147,8 +135,8 @@ func AverageTemp(days int, doc *goquery.Document) float64 {
 	var maxSum int
 	var minSum int
 	for _,pair := range tempArr {
-		maxSum = maxSum + pair.max
-		minSum = minSum + pair.min 
+		maxSum = maxSum + pair.Max
+		minSum = minSum + pair.Min 
 	}
 
 	maxAvg := float64(maxSum) / float64(len(tempArr))
@@ -213,4 +201,11 @@ func HelloFromSource2() {
 	fmt.Println(NextDayRain(doc))
 	//WillItRain(5,doc)
 
+}
+
+func GetForecast(days int) common.Forecast {	
+	doc := getPageContent()
+	date, _ := NextDayRain(doc)
+	forecast := common.Forecast{getWeatherSummary(doc), TempArray(days, doc), AverageTemp(days,doc), date , WillItRain(days, doc)}
+	return forecast
 }

@@ -1,10 +1,12 @@
 package weatherData
 
 import (
-	//"fmt"
+	"fmt"
 
 	"example.com/common"
 	"example.com/source1"
+	"example.com/source2"
+	"example.com/source3"
 )
 
 // type Forecast struct {
@@ -13,19 +15,6 @@ import (
 // 	AvgTemp float64
 // 	NextRainDay string
 // 	WillItRain []int
-// }
-
-// type WeatherSummary struct {
-// 	minTemp int
-// 	maxTemp int
-// 	humidity int
-// 	wind int
-// 	chanceOfRain int
-// }
-
-// type MinMaxPair struct {
-// 	min int
-// 	max int
 // }
 
 func HelloFromWeatherData() {
@@ -40,8 +29,16 @@ func HelloFromWeatherData() {
 func GetForecast(days int) common.Forecast {
 
 	forecastSource1 := source1.GetForecast(days)
-	// forecastSource2 := source1.GetForecast(days)
-	// forecastSource3 := source1.GetForecast(days)
+	forecastSource2 := source2.GetForecast(days)
+	forecastSource3 := source3.GetForecast(days)
+
+	fmt.Println("source1:")
+	common.PrintForecast(forecastSource1)
+	fmt.Println("source2:")
+	common.PrintForecast(forecastSource2)
+	fmt.Println("source3:")
+	common.PrintForecast(forecastSource3)
+
 
 	return forecastSource1
 

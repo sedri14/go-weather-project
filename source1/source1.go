@@ -15,27 +15,6 @@ import (
 
 const URL = "https://www.timeanddate.com/weather/israel/tel-aviv/ext"
 
-// type Forecast struct {
-// 	Summary WeatherSummary
-// 	TempArray []MinMaxPair
-// 	AvgTemp float64
-// 	NextRainDay string
-// 	WillItRain []int
-// }
-
-// type WeatherSummary struct {
-// 	minTemp int
-// 	maxTemp int
-// 	humidity int
-// 	wind int
-// 	chanceOfRain int
-// }
-
-// type MinMaxPair struct {
-// 	min int
-// 	max int
-// }
-
 func getHtml(url string) *http.Response {
 	response, error := http.Get(url)
 	if error != nil {
@@ -123,7 +102,6 @@ func TempArray(days int, doc *goquery.Document) []common.MinMaxPair {
 
 	doc.Find("#wt-ext>tbody>tr>td:nth-child(3)").EachWithBreak(func(index int, item *goquery.Selection) bool {
 		pair := item.Text()
-		fmt.Println(pair)
 
 		split := r.FindAllString(pair, 2)
 		max, errMax := strconv.Atoi(split[0])
@@ -170,7 +148,7 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 
 		if intChance > 50 {
 			dateStr = item.Find("th").Text()
-			fmt.Println(dateStr)
+			//fmt.Println(dateStr)
 			return false
 		}
 

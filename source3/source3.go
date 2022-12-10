@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+
+	"example.com/common"
 )
 
 const URL = "https://www.meteoprog.com/review/Telaviv/"
@@ -20,19 +22,6 @@ type Data struct {
 		Humidity int
 		Wind_speed int
 		Pop int
-}
-
-type WeatherSummary struct {
-	minTemp int
-	maxTemp int
-	humidity int
-	wind int
-	chanceOfRain int
-}
-
-type MinMaxPair struct {
-	min int
-	max int
 }
 
 func getHtml(url string) *http.Response {
@@ -77,20 +66,20 @@ func check(error error) {
 	}
 }
 
-func getWeatherSummary(data []Data) WeatherSummary {
+func getWeatherSummary(data []Data) common.WeatherSummary {
 	humidity := data[0].Humidity
 	min, max := data[0].Min, data[0].Max
 	chance := data[0].Pop
 	wind := data[0].Wind_speed
 
-	return WeatherSummary {min, max, humidity, wind, chance}
+	return common.WeatherSummary {min, max, humidity, wind, chance}
 }
 
-func TempArray(days int, data []Data) []MinMaxPair {
-	var minMaxPairs []MinMaxPair
+func TempArray(days int, data []Data) []common.MinMaxPair {
+	var minMaxPairs []common.MinMaxPair
 
 	for i:=0; i < days; i++ {
-		minMaxPairs = append(minMaxPairs, MinMaxPair{data[i].Min, data[i].Max})
+		minMaxPairs = append(minMaxPairs, common.MinMaxPair{data[i].Min, data[i].Max})
 	}
 
 	return minMaxPairs
@@ -102,8 +91,8 @@ func AverageTemp(days int, data[]Data) float64 {
 	var maxSum int
 	var minSum int
 	for _,pair := range tempArr {
-		maxSum = maxSum + pair.max
-		minSum = minSum + pair.min 
+		maxSum = maxSum + pair.Max
+		minSum = minSum + pair.Min 
 	}
 
 	maxAvg := float64(maxSum) / float64(len(tempArr))
@@ -138,4 +127,11 @@ func WillItRain(days int, data []Data) []int{
 func HelloFromSource3() {	
 	jsonData := getPageBodyJson()
 	fmt.Println(WillItRain(8,jsonData))
+}
+
+func GetForecast(days int) common.Forecast {	
+	dataArray := getPageBodyJson()
+	date, _ := NextDayRain(dataArray)
+	forecast := common.Forecast{getWeatherSummary(dataArray), TempArray(days, dataArray), AverageTemp(days,dataArray), date , WillItRain(days, dataArray)}
+	return forecast
 }
