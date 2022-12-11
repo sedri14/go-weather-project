@@ -30,7 +30,7 @@ func PrintSummary (summary WeatherSummary) {
 	fmt.Printf("Maximum Temperature: %d˚C\n", summary.MaxTemp)
 	fmt.Printf("Minimum Temperature: %d˚C\n", summary.MinTemp)
 	fmt.Printf("Humidity: %d%%\n", summary.Humidity)
-	fmt.Printf("Wind: %d\n", summary.Wind)
+	fmt.Printf("Wind: %d km/h\n", summary.Wind)
 	fmt.Printf("Chance Of Rain: %d%%\n", summary.ChanceOfRain)
 }
 

@@ -50,16 +50,6 @@ func getPageBodyJson() []Data {
 	return jsonData
 }
 
-// func getPageContent() *goquery.Document{
-// 	response := getHtml(URL)
-// 	defer response.Body.Close()
-
-// 	doc, error := goquery.NewDocumentFromReader(response.Body)
-// 	check(error)
-
-// 	return doc
-// }
-
 func check(error error) {
 	if (error != nil) {
 		fmt.Println(error)
@@ -133,5 +123,6 @@ func GetForecast(days int) common.Forecast {
 	dataArray := getPageBodyJson()
 	date, _ := NextDayRain(dataArray)
 	forecast := common.Forecast{getWeatherSummary(dataArray), TempArray(days, dataArray), AverageTemp(days,dataArray), date , WillItRain(days, dataArray)}
+	
 	return forecast
 }

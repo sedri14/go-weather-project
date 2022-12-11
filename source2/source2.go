@@ -47,7 +47,7 @@ func check(error error) {
 func getWeatherSummary(doc *goquery.Document) common.WeatherSummary {
 	humidity := getHumidity(doc)
 	min := getMinTemp(doc)
-	max := getMaxTemp(doc) //TODO: check if works at morning hours
+	max := getMaxTemp(doc)
 	chance := getChance(doc)
 	wind := getWind(doc)
 
@@ -147,7 +147,6 @@ func AverageTemp(days int, doc *goquery.Document) float64 {
 
 func NextDayRain(doc *goquery.Document) (string, bool) {
 	r := regexp.MustCompile(`[0-9]+`)
-	//rMonth := regexp.MustCompile(`([a-zA-Z]+)`)
 
 	var dateStr string
 
@@ -155,11 +154,9 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 		rainChanceStr := item.Find("div>div:nth-child(2)>div.row>div:nth-child(2)>ul>li:first-child").Text()
 		intChance, err := strconv.Atoi(r.FindString(rainChanceStr))
 		check(err)
-		//fmt.Println(intChance)
 
 		if intChance > 50 {
 			dateStr = item.Find(`div:first-child>div:first-child>div:first-child`).Text()
-			//fmt.Println(dateStr)
 			return false
 		}
 
@@ -173,7 +170,6 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 	}
 }
 
-//Will it rain? - a function that gets a city and a number and returns the chance of rain in this city in the next x days
 func WillItRain(days int, doc *goquery.Document) []int{
 	r := regexp.MustCompile(`[0-9]+`)
 	var chances []int
@@ -188,16 +184,6 @@ func WillItRain(days int, doc *goquery.Document) []int{
 	})
 
 	return chances
-}
-
-func HelloFromSource2() {	
-	doc := getPageContent()
-	//fmt.Println(getWeatherSummary(doc))
-	//fmt.Println(TempArray(4,doc))
-	//fmt.Println(AverageTemp(4,doc))
-	fmt.Println(NextDayRain(doc))
-	//WillItRain(5,doc)
-
 }
 
 func GetForecast(days int) common.Forecast {	

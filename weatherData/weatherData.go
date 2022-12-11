@@ -10,25 +10,6 @@ import (
 	"example.com/source3"
 )
 
-// type Forecast struct {
-// 	Summary WeatherSummary
-// 	TempArray []MinMaxPair
-// 	AvgTemp float64
-// 	NextRainDay string
-// 	WillItRain []int
-// }
-
-func HelloFromWeatherData() {
-	// source1.HelloFromSource1()
-	//source2.HelloFromSource2()
-	//source3.HelloFromSource3()
-    //message := fmt.Sprintf(messageSource1)
-    //return message
-	//source1.getPageContent
-}
-
-
-
 func summaryAverage(forecasts []common.Forecast) common.WeatherSummary {
 	var sumMinTemp float64
 	var sumMaxTemp float64

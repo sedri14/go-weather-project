@@ -133,9 +133,6 @@ func AverageTemp(days int, doc *goquery.Document) float64 {
 	return avg
 }
 
-//TODO: fix this. decide a unified format for date //TODO:
-//Next rain day - a function that returns the next day with a chance for rain over 50% in a specified city
-//if no rainy day is found in near future, bool result is false
 func NextDayRain(doc *goquery.Document) (string, bool) {
 	r := regexp.MustCompile(`[0-9]+`)
 
@@ -148,7 +145,6 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 
 		if intChance > 50 {
 			dateStr = item.Find("th").Text()
-			//fmt.Println(dateStr)
 			return false
 		}
 
@@ -162,7 +158,6 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 	}
 }
 
-//Will it rain? - a function that gets a city and a number and returns the chance of rain in this city in the next x days
 func WillItRain(days int, doc *goquery.Document) []int{
 	r := regexp.MustCompile(`[0-9]+`)
 	var chances []int
