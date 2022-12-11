@@ -47,11 +47,11 @@ func check(error error) {
 func getWeatherSummary(doc *goquery.Document) common.WeatherSummary {
 	humidity := getHumidity(doc)
 	min := getMinTemp(doc)
-	//max := getMaxTemp(doc) //TODO: check if works at morning hours
+	max := getMaxTemp(doc) //TODO: check if works at morning hours
 	chance := getChance(doc)
 	wind := getWind(doc)
 
-	return common.WeatherSummary {min, 0, humidity, wind, chance}
+	return common.WeatherSummary {min, max, humidity, wind, chance}
 }
 
 func getHumidity(doc *goquery.Document) int {
@@ -68,7 +68,6 @@ func getMaxTemp(doc *goquery.Document) int {
 	r := regexp.MustCompile(`[0-9]+`)
 	maxTempStr := doc.Find(`div[itemtype="https://schema.org/Table"]>div:first-child>div:first-child>div:nth-child(2)>ul>li:first-child`).First().Text()
 	m := r.FindString(maxTempStr)
-	fmt.Println(maxTempStr)
 	intMax, err := strconv.Atoi(m)
 	check(err)
 
@@ -160,7 +159,7 @@ func NextDayRain(doc *goquery.Document) (string, bool) {
 
 		if intChance > 50 {
 			dateStr = item.Find(`div:first-child>div:first-child>div:first-child`).Text()
-			fmt.Println(dateStr)
+			//fmt.Println(dateStr)
 			return false
 		}
 
@@ -182,8 +181,6 @@ func WillItRain(days int, doc *goquery.Document) []int{
 	doc.Find(`div[itemtype="https://schema.org/Table"]>div`).EachWithBreak(func(index int, item *goquery.Selection) bool {
 		rainChanceStr := item.Find("div>div:nth-child(2)>div.row>div:nth-child(2)>ul>li:first-child").Text()
 		intChance, err := strconv.Atoi(r.FindString(rainChanceStr))
-		check(err)
-		fmt.Println(intChance)
 		check(err)
 		chances = append(chances, intChance)
 
